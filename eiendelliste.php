@@ -12,11 +12,11 @@
 	<?php
 		include_once("mysql.php");
 		db_connnect();
-		// $query = "UPDATE file_liste SET rating='$rate' WHERE filename='$fileName'";
-		// $result = $db->query($query);
-		
-		
-
+		$query = "SELECT * FROM eiendel";
+		$result = $db->query($query);
+		foreach($result as $r){
+			print_r($r);echo('<br/>');
+		}
 	?>
 </body>
 </html>
