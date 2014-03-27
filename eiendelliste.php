@@ -14,8 +14,9 @@
 		db_connnect();
 		$query = "SELECT * FROM eiendel";
 		$result = $db->query($query);
+		echo('<br/>');
 		foreach($result as $r){
-			print_r($r);echo('<br/>');
+			print_r(implode(" ------ ",$r));echo('<br/>');
 		}
 	?>
 </body>
