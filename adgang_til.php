@@ -44,13 +44,8 @@
 		
 		/* EIENDEL */
 		$eiendel = array();
-		//$query = "SELECT * FROM oppbevares 
-		//			INNER JOIN eiendel ON eiendel.ID = oppbevares.Eiendel_ID
-		//			INNER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
-		//			INNER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
-					
-		$query = "SELECT * FROM eiendel 
-					INNER JOIN oppbevares ON eiendel.ID = oppbevares.Eiendel_ID
+		$query = "SELECT * FROM oppbevares 
+					INNER JOIN eiendel ON eiendel.ID = oppbevares.Eiendel_ID
 					INNER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
 					INNER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
 					
@@ -58,22 +53,51 @@
 		
 		foreach($result as $r){
 			$eiendel[] = $r;
-		//print_r ($r);	
-		//echo('</br>');
 		}
-	
-		//print_r ($r);	
-		echo('</br>');
 		
-		echo('eiendel_ID' . "................beskrivelse: ................ Oppbevares ................Har tilgang (personNr)................Har tilgang (Navn)</br>");
-		foreach($eiendel as $e){
-			$beskrivelse = beskrivelse($e['ID']);
+		$html = '';
+		foreach($result as $key){
+						$key2 = $key['ID'];
+						$html .= "<option value='$key2'>$key2</options>";
+		}
+		
+		echo"</br><h3><b> Sjekk hvem som har tilgang til en bestemt eiendel </b></h3>
+			<form action='' method='post'>
+				Hvem har tilgang til eiendel nr. 
+				<select name='eiendel' id='eiendel'>
+				<option selected value='id'> Eiendel nr</option>
+				$html
+				</select>?
+				<input type='submit' name='submission' value='Sjekk' /><br>
+            </form>
+		";
 
-			echo(	$e['ID'] . "................" . 
-					$beskrivelse . "................" .
-					$e['Sted_Adress'] . "................" . 
-					$e['Navn'] . "................" .
-					$e['Medlem_Person_personNR']."</br>");
+		
+		echo'<br>';
+		
+		$result = 
+		"<head><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style></head>
+		<table style='width:600px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Oppbevares</th><th>Har tilgang (personNr)</th><th>Har tilgang (Navn)</th></tr>";
+	
+		if(isset($_POST['submission'])){
+		
+			foreach($eiendel as $e){
+		
+					$id = $e['ID'];
+					$beskrivelse = beskrivelse($e['ID']);;
+					$adresse = $e['Sted_Adress'];
+					$navn = $e['Navn'];
+					$personnr = $e['Medlem_Person_personNR'];
+
+				if($id==$_POST['eiendel']){
+					$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$adresse</td><td>$personnr</td><td>$navn</td></tr>";
+				}
+			
+			}
+		
+		$result .= "</table>";
+		echo($result);
+		
 		}
 		
 	?>
