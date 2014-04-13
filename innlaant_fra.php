@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Web Photo Gallery</title>
+	<title>Togsamlerforeningen</title>
     <meta http-equiv="content-type" content="=text/html; charset=utf-8 without BOM"/>
 	<link rel="shortcut icon" href="img/favicon.ico">
 	<link rel="stylesheet" href="style.css">

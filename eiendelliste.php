@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Web Photo Gallery</title>
+	<title>Togsamlerforeningen</title>
     <meta http-equiv="content-type" content="=text/html; charset=utf-8 without BOM"/>
 	<link rel="shortcut icon" href="img/favicon.ico">
 	<link rel="stylesheet" href="style.css">
@@ -72,7 +72,7 @@
 		echo"<h3>Liste over eiendeler med ID, beskrivelse og plassering</h3>";
 		$result = 
 		"<head><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style></head>
-		<table style='width:600px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Detaljer</th><th>Sted</th></tr>";
+		<table style='width:600px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Detaljer</th><th>Oppbevaringssted</th></tr>";
 
 		foreach($eiendel as $e){
 			

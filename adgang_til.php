@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Web Photo Gallery</title>
+	<title>Togsamlerforeningen</title>
     <meta http-equiv="content-type" content="=text/html; charset=utf-8 without BOM"/>
 	<link rel="shortcut icon" href="img/favicon.ico">
 	<link rel="stylesheet" href="style.css">
@@ -44,11 +44,17 @@
 		
 		/* EIENDEL */
 		$eiendel = array();
-		$query = "SELECT * FROM oppbevares 
-					INNER JOIN eiendel ON eiendel.ID = oppbevares.Eiendel_ID
-					INNER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
-					INNER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
-					
+//		$query = "SELECT * FROM oppbevares 
+//					INNER JOIN eiendel ON eiendel.ID = oppbevares.Eiendel_ID
+//					INNER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
+//					INNER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
+
+		$query = "SELECT * FROM eiendel 
+					LEFT OUTER JOIN oppbevares ON oppbevares.Eiendel_ID = eiendel.ID
+					LEFT OUTER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
+					LEFT OUTER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
+
+
 		$result = $db->query($query);
 		
 		foreach($result as $r){
@@ -72,7 +78,7 @@
             </form>
 		";
 
-		
+			
 		echo'<br>';
 		
 		$result = 
@@ -88,7 +94,11 @@
 					$adresse = $e['Sted_Adress'];
 					$navn = $e['Navn'];
 					$personnr = $e['Medlem_Person_personNR'];
-
+					
+					if(empty($adresse)){$adresse = 'Ukjent';}
+					if(empty($navn)){$navn = 'Ukjent';}
+					if(empty($personnr)){$personnr = 'Ukjent';}
+					
 				if($id==$_POST['eiendel']){
 					$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$adresse</td><td>$personnr</td><td>$navn</td></tr>";
 				}

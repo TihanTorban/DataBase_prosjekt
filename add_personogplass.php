@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Web Photo Gallery</title>
+	<title>Togsamlerforeningen</title>
     <meta http-equiv="content-type" content="=text/html; charset=utf-8 without BOM"/>
 	<link rel="shortcut icon" href="img/favicon.ico">
-	<link rel="stylesheet" href="style.css">
-</head>
+	<link rel="stylesheet" href="style.css">	
+	</head>
 <!-------------------------------------------------------------------------------------->
 <body>
 	<a href="index.html">Oppgaver</a>
@@ -34,7 +34,7 @@
 				Epost .. <input type='text' name='epost' size='20'/>
 				Addresse <input type='text' name='addresse' size='30'/> </br><br>
 				Eier av eiendel nr. <select name='ownership' id='ownership'>
-					<option selected value='ingen'> Ingen</option>
+					<option selected value='ingen'>Ingen</option>
 					$html
 				</select><br><br>
 				Medlem ... <select name='membership' id='membership'>
@@ -44,7 +44,7 @@
 				<input type='submit' name='submission' value='Legg inn' /><br>
             </form>
 		";
-		
+
 	echo'
 		</br><h3><b> Legg inn ny plassering </b></h3>
 			<form action="" method="post">
@@ -97,7 +97,7 @@
 		}
 		
 		if($membership=='ja'){
-			echo"Registreres som medlem i medlemsregister<br>";
+			echo"Registreres som medlem<br>";
 			$query3 = "INSERT INTO medlem(`Person_personNR`) VALUES ($personNr)";
 			$result3 = $db->query($query3);
 		}
