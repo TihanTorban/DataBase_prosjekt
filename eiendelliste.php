@@ -66,24 +66,54 @@
 			}
 			return FALSE;
 		}
-		echo('</br>');
-		echo('ID' . "................beskrivelse: ................ sted	</br>");
+//		echo'<br><br>';
+//		echo('ID' . "................beskrivelse: ................ sted	</br>");
+
+		echo"<h3>Liste over eiendeler med ID, beskrivelse og plassering</h3>";
+		$result = 
+		"<head><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style></head>
+		<table style='width:600px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Detaljer</th><th>Sted</th></tr>";
+
 		foreach($eiendel as $e){
+			
+			$id = $e['ID'];
+			$details ="";
 			$beskrivelse = '';
-			if (search($tog, $e['ID'])) 		$beskrivelse = 'Tog';
-			if (search($skinner, $e['ID']))		$beskrivelse = 'Skinner';
-			if (search($miniatyrer, $e['ID']))	$beskrivelse = 'Miniatyrer';
+			if (search($tog, $e['ID'])){
+				$beskrivelse = 'Tog';				
+				foreach($tog as $t){
+					if($id==$t['Eiendel_ID']){$details .= 'Årgang: '.$t['Aargang'].'. Modell: '.$t['Modell'];}
+				}
+			}
+			
+			if (search($skinner, $e['ID'])){
+				$beskrivelse = 'Skinner';
+			foreach($skinner as $s){
+					if($id==$s['Eiendel_ID']){$details .= 'Type: '.$s['Type'].'. Lengde: '.$s['Lengde'];}
+				}
+			}
+			
+			if (search($miniatyrer, $e['ID'])){
+			$beskrivelse = 'Miniatyrer';
+			foreach($miniatyrer as $m){
+					if($id==$m['Eiendel_ID']){$details .= 'Bredde: '.$m['Bredde'].'cm. Høyde: '.$m['Hoyde'].'cm';}
+				}
+			}
+			
 			$stedsvar = searchAdress($e['ID']);
 			
 			if (isset($stedsvar['Adress'])){
 				$sted = $stedsvar['Adress'];
 			}else{
-				$sted = '';
+				$sted = 'Ukjent';
 			}
 			
-			echo($e['ID'] . "................" . $beskrivelse . "................" . $sted . "</br>");
+			$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$details</td><td>$sted</td></tr>";
+			//echo($e['ID'] . "................" . $beskrivelse . "................" . $sted . "</br>");
 		}
 		
+		$result .= "</table>";
+		echo($result);
 	?>
 </body>
 </html>

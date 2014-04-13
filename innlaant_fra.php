@@ -54,16 +54,36 @@
 		}
 		
 		echo('</br>');
-		echo('eiendel_ID' . "................beskrivelse: ................ eierNR ................eierNavn ................leveringsdato</br>");
+		
+		echo"<h3>Liste over eiendeler som organisasjonen har lånt med id, beskrivelse, eier og leveringsdato</h3>";
+		
+		$result = 
+		"<head><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style></head>
+		<table style='width:700px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Eier (personNr)</th><th> Eier (Navn)</th><th>Leveringsdato</th></tr>";
+
+		//echo('eiendel_ID' . "................beskrivelse: ................ eierNR ................eierNavn ................leveringsdato</br>");
+		
 		foreach($eiendel as $e){
+			$id = $e['ID'];
 			$beskrivelse = beskrivelse($e['ID']);
-			$levDato = 'Leveres '.$e['Utlaansperiode'].' dager fra '.$e['Utlaansdato'];
-			echo(	$e['ID'] . "................" . 
-					$beskrivelse . "................" . 
-					$e['personNR']. "................" .
-					$e['Navn']. "................" .
-					$levDato."</br>");
+			$personnr = $e['personNR'];
+			$navn = $e['Navn'];
+			$utlaansp = $e['Utlaansperiode'];
+			$utlaansd = $e['Utlaansdato'];
+			if(!empty($utlaansp) && !empty($utlaansd)){$levDato = 'Leveres '.$utlaansp.' dager fra '.$utlaansd;} else{$levDato = 'Ukjent';}
+		
+		//	echo(	$e['ID'] . "................" . 
+		//			$beskrivelse . "................" . 
+		//			$e['personNR']. "................" .
+		//			$e['Navn']. "................" .
+		//			$levDato."</br>");
+		
+		$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$personnr</td><td>$navn</td><td>$levDato</td></tr>";
+		
 		}
+		
+		$result .= "</table>";
+		echo($result);
 		
 	?>
 </body>

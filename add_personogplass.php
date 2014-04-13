@@ -29,14 +29,14 @@
 		echo"</br><h3><b> Legg inn nytt medlem og eier </b></h3>
 			<form action='' method='post'>
                 Person NR <input type='text' name='personNr' size='20'/>
-				Navn .. <input type='text' name='navn' size='20'/> </br>
+				Navn .. <input type='text' name='navn' size='20'/> </br><br>
 				Telefon .... <input type='text' name='telefon' size='20'/> 
 				Epost .. <input type='text' name='epost' size='20'/>
-				Addresse <input type='text' name='addresse' size='30'/> </br>
+				Addresse <input type='text' name='addresse' size='30'/> </br><br>
 				Eier av eiendel nr. <select name='ownership' id='ownership'>
 					<option selected value='ingen'> Ingen</option>
 					$html
-				</select><br>
+				</select><br><br>
 				Medlem ... <select name='membership' id='membership'>
 					<option selected value='ja'> Ja</option>
 					<option value='nei'> Nei</option>
@@ -48,7 +48,7 @@
 	echo'
 		</br><h3><b> Legg inn ny plassering </b></h3>
 			<form action="" method="post">
-                Adresse ..... <input type="text" name="adresse" size="20"/><br>
+                Adresse ..... <input type="text" name="adresse" size="20"/><br><br>
 				Beskrivelse <input type="text" name="plassering" size="20"/> </br><br>
 				<input type="submit" name="submission2" value="Legg inn" /><br>
             </form>
@@ -80,10 +80,21 @@
 			exit;
 		}
 		
+		if(strlen($telefon)>11 || strlen($personNr)>11){
+			echo '<i>Både PersonNR og Telefon må være 11 siffer eller kortere!<i><br>';
+			exit;
+		}
+		
 		echo"Setter inn: Personnummer: $personNr, Navn: $navn, Telefonnr: $telefon, E-post: $epost, Addresse: $addresse<br>";
 		$query2 = "INSERT INTO person(`personNR`, `Navn`, `Telefon`, `E-post`, `Adresse`) VALUES ($personNr, '$navn', $telefon, '$epost', '$addresse')";
 		//echo"<br>$query2<br>";
 		$result2 = $db->query($query2);
+
+		if($ownership!='ingen'){
+			echo"Registreres som eier av eiendel nr. $ownership<br>";
+			$query5 = "INSERT INTO innlaant_fra(`Person_PersonNR`, `Eiendel_ID`) VALUES ($personNr, $ownership)";
+			$result4 = $db->query($query5);
+		}
 		
 		if($membership=='ja'){
 			echo"Registreres som medlem i medlemsregister<br>";
@@ -95,17 +106,6 @@
 			echo"Registreres som ikke-medlem<br>";
 			$query4 = "INSERT INTO `ikke_medlem`(`Person_personNR`) VALUES ($personNr)";
 			$result4 = $db->query($query4);
-		}
-		echo"<script type='text/javascript'>
-			$('select[name='ownership']').change(function(){
-	
-			if ($(this).val() == '2')
-				alert('call the do something function on option 2');
-    
-			});
-		</script>";
-		
-		if($ownership!='ingen'){
 		}
 		
 		echo '<i>Great success!<i><br>';
