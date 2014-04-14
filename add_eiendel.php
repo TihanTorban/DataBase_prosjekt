@@ -15,11 +15,23 @@
 
 		function getDato($dato, $mnd, $aar){
 			$result = $aar.'-'.$mnd.'-'.$dato;
-			if($mnd%2==0 && $dato>30){
-				echo"error not that many days in that month!";
-				exit;
+			if(($mnd<8 && ($mnd%2==0 && $dato>30)) ||($mnd>7 && ($mnd%2!=0 && $dato>30)) || ($mnd==2 && $dato>28)){
+				return false;
 			}
 			return $result;
+		}
+		
+		function checkValidInteger($tall){
+			if(is_numeric($tall)){
+				if(!strpos($tall,'.')){
+					if(!strlen($tall)>11){
+						return true;
+					}
+				}
+			}
+			else{
+				return false;
+				}
 		}
 		
 		$s = '&nbsp';
@@ -86,7 +98,7 @@
 				</select><br><br>				
 				Verdi $l$l$l$l$l$l$s <input type='text' name='verdi' size='5'/>,- NOK <br><br>
 				Kategori $l$l$l$l$s$s <select name='kategori' id='kategori'>
-					<option value='tog'> Tog</option>
+					<option selected value='tog'> Tog</option>
 					<option value='skinner'> Skinner</option> 
 					<option value='miniatyrer'> Miniatyrer</option>
 				</select><br><br>
@@ -94,7 +106,7 @@
 				$l Tog-Modell / Skinne-Type $s$s$s$s$s/ Miniatyr-Høyde $s$s$s<input type='text' name='detalj1' size='5'/><br>
 				$l Tog-Årgang / Skinne-Lengde / Miniatyr-Lengde $s$s <input type='text' name='detalj2' size='5'/><br><br>
 				Oppbevaringssted $s<select name='sted' id='sted'>
-					<option value='ukjent'> Ukjent</option>
+					<option selected value='ukjent'> Ukjent</option>
 					$steder
 				</select>
 				$l$l <br><br>Innlånt fra medlem/ikke-medlem <select name='fra' id='fra'>
@@ -127,16 +139,18 @@
 		
 		if(isset($_POST['submission'])){
 		
-//		if(!empty($_POST['a_dato']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
-//		!empty($_POST['a_kategori']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])&&
-//		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
-//		!empty($_POST['l_dato'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
+		if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
+		!empty($_POST['kategori']) && !empty($_POST['verdi']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])){
 		
-if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
+//		&&		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
+//		!empty($_POST['l_dag'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
+		
+//if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
 			$f_a_dato = $_POST['a_dag'];
 			$f_a_mnd = $_POST['a_mnd'];
 			$f_a_aar = $_POST['a_aar'];
 			$f_kategori = $_POST['kategori'];
+			$f_verdi = $_POST['verdi'];
 			$f_detalj1 = $_POST['detalj1'];
 			$f_detalj2 = $_POST['detalj2'];
 			$f_sted = $_POST['sted'];
@@ -147,16 +161,42 @@ if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])
 			$f_l_aar = $_POST['l_aar'];
 			$f_varighet = $_POST['varighet'];
 			
+			//echo"$f_a_dato $f_a_mnd $f_a_aar $f_kategori $f_verdi $f_detalj1 $f_detalj2 $f_sted $f_fra $f_til $f_l_dato $f_l_mnd $f_l_aar $f_varighet";
+			
 			$svar = getDato($f_a_dato, $f_a_mnd, $f_a_aar);
+			$svar2 = getDato($f_l_dato, $f_l_mnd, $f_l_aar);
+	
+			if(!$svar || !$svar2){
+				echo "<h2>Resultat</h2><i>Det er ikke så mange dager i den måneden!</i>";
+				exit;
+			}
 			
-			echo"$svar";
+			echo "<i>Great success!</i>";
+		//	echo "$svar";
 			
+			$query1 = "INSERT INTO eiendel(Anskafelsesdato, Verdi) VALUES ('$svar', $f_verdi)";
+			$result1 = $db->query($query1);
 			
+			if($f_kategori=='tog'){
+				$d1 = 'Modell';
+				$d2 = 'Aargang';
+			}
+			elseif($f_kategori=='skinner'){
+				$d1 = 'Type';
+				$d2 = 'Lengde';
+			}
+			elseif($f_kategori=='miniatyrer'){
+				$d1 = 'Bredde';
+				$d2 = 'Hoyde';
+			}
+			
+			$query2 = "INSERT INTO $f_kategori(Eiendel_ID, $d1, $d2) VALUES(LAST_INSERT_ID(), '$f_detalj1', '$f_detalj2')";
+			$result2 = $db->query($query2);
 			
 		}
 		else{
 		
-		echo"error";
+		echo"<h3>Resultat</h3><i>Du må minst angi anskaffelsesdato, verdi, kategori og detaljer!<i>";
 		
 		}
 		}
