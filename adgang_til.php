@@ -62,9 +62,14 @@
 		}
 		
 		$html = '';
+		$lastkey = '';
+		
 		foreach($result as $key){
 						$key2 = $key['ID'];
-						$html .= "<option value='$key2'>$key2</options>";
+						if($key2!=$lastkey){
+							$html .= "<option value='$key2'>$key2</options>";
+						}
+						$lastkey = $key2;
 		}
 		
 		echo"</br><h3><b> Sjekk hvem som har tilgang til en bestemt eiendel </b></h3>

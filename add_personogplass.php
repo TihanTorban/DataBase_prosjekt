@@ -16,28 +16,29 @@
 		/* EIENDEL */
 		$eiendel = array();
 					
-		$query = "SELECT ID FROM eiendel";
-		
+		$query = "SELECT Adress FROM sted";
 		$result = $db->query($query);
 		
 		$html = '';
 		foreach($result as $key){
-						$key2 = $key['ID'];
+						$key2 = $key['Adress'];
 						$html .= "<option value='$key2'>$key2</options>";
 		}
 
+		$s = '&nbsp';
+		
 		echo"</br><h3><b> Legg inn nytt medlem og eier </b></h3>
 			<form action='' method='post'>
-                Person NR <input type='text' name='personNr' size='20'/>
-				Navn .. <input type='text' name='navn' size='20'/> </br><br>
-				Telefon .... <input type='text' name='telefon' size='20'/> 
-				Epost .. <input type='text' name='epost' size='20'/>
-				Addresse <input type='text' name='addresse' size='30'/> </br><br>
-				Eier av eiendel nr. <select name='ownership' id='ownership'>
+                Person NR$s <input type='text' name='personNr' size='20'/>
+				$s Navn $s$s <input type='text' name='navn' size='20'/> </br><br>
+				Telefon $s$s$s$s$s <input type='text' name='telefon' size='20'/> 
+				$s Epost $s$s <input type='text' name='epost' size='20'/>
+				$s Addresse <input type='text' name='addresse' size='30'/> </br><br>
+				Har tilgang <select name='tilgang' id='tilgang'>
 					<option selected value='ingen'>Ingen</option>
 					$html
 				</select><br><br>
-				Medlem ... <select name='membership' id='membership'>
+				Medlem $s$s$s$s <select name='membership' id='membership'>
 					<option selected value='ja'> Ja</option>
 					<option value='nei'> Nei</option>
 				</select><br><br>				
@@ -45,14 +46,14 @@
             </form>
 		";
 
-	echo'
+	echo"
 		</br><h3><b> Legg inn ny plassering </b></h3>
-			<form action="" method="post">
-                Adresse ..... <input type="text" name="adresse" size="20"/><br><br>
-				Beskrivelse <input type="text" name="plassering" size="20"/> </br><br>
-				<input type="submit" name="submission2" value="Legg inn" /><br>
+			<form action='' method='post'>
+                Adresse $s$s$s$s$s$s <input type='text' name='adresse' size='20'/><br><br>
+				Beskrivelse $s<input type='text' name='plassering' size='20'/> </br><br>
+				<input type='submit' name='submission2' value='Legg inn' /><br>
             </form>
-	';
+	";
 	
 	//$ja = is_numeric('4.4');
 	//$ja = is_int(4);
@@ -69,7 +70,7 @@
 		$epost = $_POST['epost'];
 		$addresse = $_POST['addresse'];
 		$membership = $_POST['membership'];
-		$ownership = $_POST['ownership'];
+		$tilgang = $_POST['tilgang'];
 		
 		if(!is_numeric($telefon) || !is_numeric($personNr)){
 			echo '<i>Både PersonNR og Telefon må være tall!<i><br>';
@@ -89,12 +90,6 @@
 		$query2 = "INSERT INTO person(`personNR`, `Navn`, `Telefon`, `E-post`, `Adresse`) VALUES ($personNr, '$navn', $telefon, '$epost', '$addresse')";
 		//echo"<br>$query2<br>";
 		$result2 = $db->query($query2);
-
-		if($ownership!='ingen'){
-			echo"Registreres som eier av eiendel nr. $ownership<br>";
-			$query5 = "INSERT INTO innlaant_fra(`Person_PersonNR`, `Eiendel_ID`) VALUES ($personNr, $ownership)";
-			$result4 = $db->query($query5);
-		}
 		
 		if($membership=='ja'){
 			echo"Registreres som medlem<br>";
@@ -107,6 +102,17 @@
 			$query4 = "INSERT INTO `ikke_medlem`(`Person_personNR`) VALUES ($personNr)";
 			$result4 = $db->query($query4);
 		}
+
+		if($tilgang!='ingen' && $membership=='ja'){
+			echo"Registrerer at medlemmet har tilgang til $tilgang<br>";
+			$query5 = "INSERT INTO har_tilgang(`Medlem_Person_personNR`, `Sted_Adress`) VALUES ($personNr, '$tilgang')";
+			$result4 = $db->query($query5);
+		}
+		elseif($tilgang!='ingen' && $membership!='ja'){
+			echo '<i>Bare medlemmer kan ha tilgang til oppbevaringssteder!<i><br>';
+			exit;
+		}
+
 		
 		echo '<i>Great success!<i><br>';
 	}
