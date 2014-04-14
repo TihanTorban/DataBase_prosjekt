@@ -12,6 +12,15 @@
 	<?php
 		include_once("mysql.php");
 		db_connnect();
+
+		function getDato($dato, $mnd, $aar){
+			$result = $aar.'-'.$mnd.'-'.$dato;
+			if($mnd%2==0 && $dato>30){
+				echo"error not that many days in that month!";
+				exit;
+			}
+			return $result;
+		}
 		
 		$s = '&nbsp';
 		$l = "$s$s$s";
@@ -23,9 +32,11 @@
 		
 		$m = array('Januar','Februar','Mars','April','Mai','Juni','Juli','August','September','Oktober','November','Desember');
 		
+		$i = 1;
 		$maneder = '';
 		foreach($m as $m2){
-			$maneder .= "<option value='$m2'>$m2</options>";
+			$maneder .= "<option value='$i'>$m2</options>";
+			$i++;
 		}
 
 		$aar ='';
@@ -104,7 +115,7 @@
 					$aar
 				</select><br><br>
 				Lånevarighet $l$l$s$s<select name='varighet' id='varighet'>
-					<option value='ingen'> Ingen</option>
+					<option selected value='ingen'> Ingen</option>
 					<option value='15'> 15 dager</option>
 					<option value='30'> 30 dager</option>
 					<option value='60'> 60 dager</option>
@@ -113,6 +124,42 @@
 				<input type='submit' name='submission' value='Legg inn' /><br>
             </form>
 		";
+		
+		if(isset($_POST['submission'])){
+		
+//		if(!empty($_POST['a_dato']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
+//		!empty($_POST['a_kategori']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])&&
+//		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
+//		!empty($_POST['l_dato'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
+		
+if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
+			$f_a_dato = $_POST['a_dag'];
+			$f_a_mnd = $_POST['a_mnd'];
+			$f_a_aar = $_POST['a_aar'];
+			$f_kategori = $_POST['kategori'];
+			$f_detalj1 = $_POST['detalj1'];
+			$f_detalj2 = $_POST['detalj2'];
+			$f_sted = $_POST['sted'];
+			$f_fra = $_POST['fra'];
+			$f_til = $_POST['til'];
+			$f_l_dato = $_POST['l_dag'];
+			$f_l_mnd = $_POST['l_mnd'];
+			$f_l_aar = $_POST['l_aar'];
+			$f_varighet = $_POST['varighet'];
+			
+			$svar = getDato($f_a_dato, $f_a_mnd, $f_a_aar);
+			
+			echo"$svar";
+			
+			
+			
+		}
+		else{
+		
+		echo"error";
+		
+		}
+		}
 		
 		
 	?>
