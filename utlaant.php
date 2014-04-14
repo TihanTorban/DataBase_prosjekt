@@ -5,6 +5,7 @@
     <meta http-equiv="content-type" content="=text/html; charset=utf-8 without BOM"/>
 	<link rel="shortcut icon" href="img/favicon.ico">
 	<link rel="stylesheet" href="style.css">
+	<style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style>
 </head>
 <!-------------------------------------------------------------------------------------->
 <body>
@@ -44,25 +45,67 @@
 		
 		/* EIENDEL */
 		$eiendel = array();
-		$query = "SELECT * FROM innlaant_fra 
-					INNER JOIN eiendel ON eiendel.ID = innlaant_fra.Eiendel_ID
-					INNER JOIN person ON person.personNR = innlaant_fra.Person_PersonNR";
+		$query = "SELECT * FROM utlaant_til
+						INNER JOIN eiendel ON eiendel.ID = utlaant_til.Eiendel_ID
+						INNER JOIN person ON person.personNR = utlaant_til.Medlem_Person_PersonNR";
 		$result = $db->query($query);
-		// echo('<br/>');
+
 		foreach($result as $r){
 			$eiendel[] = $r;
 		}
-		
 		echo('</br>');
-		echo('eiendel_ID' . "................beskrivelse: ................ eierNR ................eierNavn ................leveringsdato</br>");
-		foreach($eiendel as $e){
-			$beskrivelse = beskrivelse($e['ID']);
-			$levDato = 'Leveres '.$e['Utlaansperiode'].' dager fra '.$e['Utlaansdato'];
-			echo(	$e['ID'] . "................" . 
-					$beskrivelse . "................" . 
-					$e['personNR']. "................" .
-					$e['Navn']. "................" .
-					$levDato."</br>");
+		
+		echo"<h3>Finn ut hvem som har lånt en bestemt eiendel. List opp navn og kontaktinformasjon</h3>";
+		$html = '';
+		foreach($eiendel as $key){
+						$eId = $key['ID'];
+						$html .= "<option value='$eId'>$eId</options>";
+		}
+		echo"</br>
+			<h3><b> Sjekk hvem som har lånt en bestemt eiendel </b></h3>
+			<form action='' method='post'>
+				Hvem som har lånt en bestemt eiendel 
+				<select name='eiendel' id='eiendel'>
+				<option selected value='id'> Eiendel nr</option>
+					$html
+				</select>?
+				<input type='submit' name='submission' value='Sjekk' /><br>
+            </form>
+		";
+		
+		
+		
+		if(isset($_POST['submission'])){
+			$resultTxt = "
+			<table style='width:700px'>
+				<tr>
+					<th>Eiendel_Id</th>
+					<th>Beskrivelse</th>
+					<th>personNr</th>
+					<th>Navn</th>
+				</tr>";
+			foreach($eiendel as $e){ 	
+					$id = $e['ID'];
+					$beskrivelse = beskrivelse($e['ID']);
+					$navn = $e['Navn'];
+					$personnr = $e['Medlem_Person_PersonNR'];
+					
+					if(empty($adresse)){$adresse = 'Ukjent';}
+					if(empty($navn)){$navn = 'Ukjent';}
+					if(empty($personnr)){$personnr = 'Ukjent';}
+					
+				if($id==$_POST['eiendel']){
+					$resultTxt .= "<tr>
+									<td>$id</td>
+									<td>$beskrivelse</td>
+									<td>$personnr</td>
+									<td>$navn</td>
+								</tr>";
+				}
+			
+			}
+			$resultTxt .= "</table>";
+			echo($resultTxt);
 		}
 		
 	?>
