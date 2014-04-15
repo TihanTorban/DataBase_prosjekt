@@ -78,12 +78,9 @@
 		include_once("mysql.php");
 		db_connnect();
 
-		function getDato($dato, $mnd, $aar){
-			$result = $aar.'-'.$mnd.'-'.$dato;
-			if(($mnd<8 && ($mnd%2==0 && $dato>30)) ||($mnd>7 && ($mnd%2!=0 && $dato>30)) || ($mnd==2 && $dato>28)){
-				return false;
-			}
-			return $result;
+		function getDato($dato){
+			$pieces = explode("-", $dato);
+			return $pieces[2].'-'.$pieces[1].'-'.$pieces[0];
 		}
 		
 		function checkValidInteger($tall){
@@ -149,7 +146,7 @@
 		
 		echo"</br><h3><b> Legg inn ny eiendel </b></h3>
 			<form action='' method='post'>
-                Ansk. dato$s$s$s$s$s <input id='dato' type='text' size='11' value='dd-mm-yyyy'>
+                Ansk. dato$s$s$s$s$s <input id='dato' name='dato' type='text' size='11' value='dd-mm-yyyy'>
 					<a href=\"javascript:NewCal('dato','ddmmyyyy')\">
 						<img src='datetimepick/cal.gif' width='16' height='16' border='0' alt='Pick a date'>
 					</a><br><br>				
@@ -184,7 +181,7 @@
 					</select><br><br>
 				<span id='LaanD' style='display:none;'>
 					Lånedato $s$s$s$s$s$s 
-						<input id='laaneDato' type='text' size='11' value='dd-mm-yyyy'>
+						<input id='laaneDato' name='laaneDato' type='text' size='11' value='dd-mm-yyyy'>
 						<a href=\"javascript:NewCal('laaneDato','ddmmyyyy')\">
 							<img src='datetimepick/cal.gif' width='16' height='16' border='0' alt='Pick a date'>
 						</a><br><br>
@@ -202,66 +199,70 @@
 	
 		if(isset($_POST['submission'])){
 		
-		if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
-		!empty($_POST['kategori']) && !empty($_POST['verdi']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])){
-		
-//		&&		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
-//		!empty($_POST['l_dag'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
-		
-//if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
-			$f_a_dato = $_POST['a_dag'];
-			$f_a_mnd = $_POST['a_mnd'];
-			$f_a_aar = $_POST['a_aar'];
-			$f_kategori = $_POST['kategori'];
-			$f_verdi = $_POST['verdi'];
-			$f_detalj1 = $_POST['detalj1'];
-			$f_detalj2 = $_POST['detalj2'];
-			$f_sted = $_POST['sted'];
-			$f_fra = $_POST['fra'];
-			$f_til = $_POST['til'];
-			$f_l_dato = $_POST['l_dag'];
-			$f_l_mnd = $_POST['l_mnd'];
-			$f_l_aar = $_POST['l_aar'];
-			$f_varighet = $_POST['varighet'];
+			if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
+			!empty($_POST['kategori']) && !empty($_POST['verdi']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])){
 			
-			//echo"$f_a_dato $f_a_mnd $f_a_aar $f_kategori $f_verdi $f_detalj1 $f_detalj2 $f_sted $f_fra $f_til $f_l_dato $f_l_mnd $f_l_aar $f_varighet";
+	//		&&		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
+	//		!empty($_POST['l_dag'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
 			
-			$svar = getDato($f_a_dato, $f_a_mnd, $f_a_aar);
-			$svar2 = getDato($f_l_dato, $f_l_mnd, $f_l_aar);
+	//if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
 	
-			if(!$svar || !$svar2){
-				echo "<h2>Resultat</h2><i>Det er ikke så mange dager i den måneden!</i>";
-				exit;
-			}
-			
-			echo "<i>Great success!</i>";
-		//	echo "$svar";
-			
-			$query1 = "INSERT INTO eiendel(Anskafelsesdato, Verdi) VALUES ('$svar', $f_verdi)";
-			$result1 = $db->query($query1);
-			
-			if($f_kategori=='tog'){
-				$d1 = 'Modell';
-				$d2 = 'Aargang';
-			}
-			elseif($f_kategori=='skinner'){
-				$d1 = 'Type';
-				$d2 = 'Lengde';
-			}
-			elseif($f_kategori=='miniatyrer'){
-				$d1 = 'Bredde';
-				$d2 = 'Hoyde';
-			}
-			
-			$query2 = "INSERT INTO $f_kategori(Eiendel_ID, $d1, $d2) VALUES(LAST_INSERT_ID(), '$f_detalj1', '$f_detalj2')";
-			$result2 = $db->query($query2);
-			
-		}
-		else{
+				// $f_a_dato = $_POST['a_dag'];
+				// $f_a_mnd = $_POST['a_mnd'];
+				// $f_a_aar = $_POST['a_aar'];
+				$dato = $_POST['dato'];
+				
+				$f_kategori = $_POST['kategori'];
+				$f_verdi = $_POST['verdi'];
+				$f_detalj1 = $_POST['detalj1'];
+				$f_detalj2 = $_POST['detalj2'];
+				$f_sted = $_POST['sted'];
+				$f_fra = $_POST['fra'];
+				$f_til = $_POST['til'];
+				
+				// $f_l_dato = $_POST['l_dag'];
+				// $f_l_mnd = $_POST['l_mnd'];
+				// $f_l_aar = $_POST['l_aar'];
+				$laaneDato = $_POST['laaneDato'];
+				
+				$f_varighet = $_POST['varighet'];
+				print_r($laaneDato);
+				//echo"$f_a_dato $f_a_mnd $f_a_aar $f_kategori $f_verdi $f_detalj1 $f_detalj2 $f_sted $f_fra $f_til $f_l_dato $f_l_mnd $f_l_aar $f_varighet";
+				
+				$svar = getDato($dato);
+				$svar2 = getDato($laaneDato);
 		
-		echo"<h3>Resultat</h3><i>Du må minst angi anskaffelsesdato, verdi, kategori og detaljer!<i>";
-		
-		}
+				if(!$svar || !$svar2){
+					echo "<h2>Resultat</h2><i>Det er ikke så mange dager i den måneden!</i>";
+					exit;
+				}
+				
+				echo "<i>Great success!</i>";
+			//	echo "$svar";
+				
+				$query1 = "INSERT INTO eiendel(Anskafelsesdato, Verdi) VALUES ('$svar', $f_verdi)";
+				$result1 = $db->query($query1);
+				
+				if($f_kategori=='tog'){
+					$d1 = 'Modell';
+					$d2 = 'Aargang';
+				}
+				elseif($f_kategori=='skinner'){
+					$d1 = 'Type';
+					$d2 = 'Lengde';
+				}
+				elseif($f_kategori=='miniatyrer'){
+					$d1 = 'Bredde';
+					$d2 = 'Hoyde';
+				}
+				
+				$query2 = "INSERT INTO $f_kategori(Eiendel_ID, $d1, $d2) VALUES(LAST_INSERT_ID(), '$f_detalj1', '$f_detalj2')";
+				$result2 = $db->query($query2);
+				
+			}else{
+				echo"<h3>Resultat</h3><i>Du må minst angi anskaffelsesdato, verdi, kategori og detaljer!<i>";
+			
+			}
 		}
 		
 	?>
