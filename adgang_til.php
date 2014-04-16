@@ -51,8 +51,10 @@
 
 		$query = "SELECT * FROM eiendel 
 					LEFT OUTER JOIN oppbevares ON oppbevares.Eiendel_ID = eiendel.ID
+					LEFT OUTER JOIN sted ON sted.Adress = oppbevares.Sted_Adress
 					LEFT OUTER JOIN har_tilgang ON har_tilgang.Sted_Adress = oppbevares.Sted_Adress
-					LEFT OUTER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR";
+					LEFT OUTER JOIN person ON person.PersonNR = har_tilgang.Medlem_Person_personNR
+					GROUP BY ID";
 
 
 		$result = $db->query($query);
@@ -88,7 +90,7 @@
 		
 		$result = 
 		"<head><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}</style></head>
-		<table style='width:600px'><tr><th>Eiendel_Id</th><th>Beskrivelse</th><th>Oppbevares</th><th>Har tilgang (personNr)</th><th>Har tilgang (Navn)</th></tr>";
+		<table style='width:800px'><tr><th>Eiendel ID</th><th>Beskrivelse</th><th>Oppbevares</th><th>Stedsbeskrivelse</th><th>Har tilgang (personNr)</th><th>Har tilgang (Navn)</th></tr>";
 	
 		if(isset($_POST['submission'])){
 		
@@ -97,6 +99,7 @@
 					$id = $e['ID'];
 					$beskrivelse = beskrivelse($e['ID']);;
 					$adresse = $e['Sted_Adress'];
+					$addb = $e['Beskrivelse'];
 					$navn = $e['Navn'];
 					$personnr = $e['Medlem_Person_personNR'];
 					
@@ -105,7 +108,7 @@
 					if(empty($personnr)){$personnr = 'Ukjent';}
 					
 				if($id==$_POST['eiendel']){
-					$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$adresse</td><td>$personnr</td><td>$navn</td></tr>";
+					$result .= "<tr><td>$id</td><td>$beskrivelse</td><td>$adresse</td><td>$addb</td><td>$personnr</td><td>$navn</td></tr>";
 				}
 			
 			}
