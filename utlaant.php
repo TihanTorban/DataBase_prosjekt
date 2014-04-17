@@ -55,13 +55,13 @@
 		}
 		echo('</br>');
 		
-		echo"<h3>Finn ut hvem som har lånt en bestemt eiendel. List opp navn og kontaktinformasjon</h3>";
+		//echo"<h3>Finn ut hvem som har lånt en bestemt eiendel. List opp navn og kontaktinformasjon</h3>";
 		$html = '';
 		foreach($eiendel as $key){
 						$eId = $key['ID'];
 						$html .= "<option value='$eId'>$eId</options>";
 		}
-		echo"</br>
+		echo"
 			<h3><b> Sjekk hvem som har lånt en bestemt eiendel </b></h3>
 			<form action='' method='post'>
 				Hvem som har lånt en bestemt eiendel 
@@ -70,7 +70,7 @@
 					$html
 				</select>?
 				<input type='submit' name='submission' value='Sjekk' /><br>
-            </form>
+            </form><br>
 		";
 		
 		
@@ -83,12 +83,18 @@
 					<th>Beskrivelse</th>
 					<th>personNr</th>
 					<th>Navn</th>
+					<th>Telefon nr</th>
+					<th>Adresse</th>
+					<th>E-post</th>
 				</tr>";
 			foreach($eiendel as $e){ 	
 					$id = $e['ID'];
 					$beskrivelse = beskrivelse($e['ID']);
 					$navn = $e['Navn'];
 					$personnr = $e['Medlem_Person_PersonNR'];
+					$telefon = $e['Telefon'];
+					$adresse = $e['Adresse'];
+					$epost = $e['E-post'];
 					
 					if(empty($adresse)){$adresse = 'Ukjent';}
 					if(empty($navn)){$navn = 'Ukjent';}
@@ -100,6 +106,9 @@
 									<td>$beskrivelse</td>
 									<td>$personnr</td>
 									<td>$navn</td>
+									<td>$telefon</td>
+									<td>$adresse</td>
+									<td>$epost</td>
 								</tr>";
 				}
 			

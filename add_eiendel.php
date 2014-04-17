@@ -61,6 +61,8 @@
 					document.getElementById('LaanD').style.display="list-item";
 				}else if(document.getElementById('fra').value=='nei'){
 					document.getElementById('LaanD').style.display="none";
+					document.getElementById('laaneDato').value='';
+					document.getElementById('varighet').selectedIndex='0';
 				}
 			}
 			if (id == 'til'){
@@ -69,6 +71,8 @@
 					document.getElementById('LaanD').style.display="list-item";
 				}else if(document.getElementById('til').value=='nei'){
 					document.getElementById('LaanD').style.display="none";
+					document.getElementById('laaneDato').value='';
+					document.getElementById('varighet').selectedIndex='0';
 				}
 			}
 		}
@@ -86,7 +90,7 @@
 		function checkValidInteger($tall){
 			if(is_numeric($tall)){
 				if(!strpos($tall,'.')){
-					if(!strlen($tall)>11){
+					if(!strlen($tall)<12){
 						return true;
 					}
 				}
@@ -130,8 +134,9 @@
 			$query = "SELECT Navn, personNR FROM person";
 			$result = $db->query($query);
 			foreach($result as $key){
-							$key2 = $key['Navn'];
-							$personer .= "<option value='$key2'>$key2</options>";
+					$key2 = $key['Navn'];
+					$key3 = $key['personNR'];
+					$personer .= "<option value='$key3'>$key2</options>";
 			}
 		
 		$medlemmer = '';
@@ -139,10 +144,10 @@
 							INNER JOIN person ON person.personNR = medlem.Person_personNR";
 			$result = $db->query($query);
 			foreach($result as $key){
-							$key2 = $key['Navn'];
-							$medlemmer .= "<option value='$key2'>$key2</options>";
+				$key2 = $key['Navn'];
+				$key3 = $key['personNR'];
+				$medlemmer .= "<option value='$key3'>$key2</options>";
 			}
-		
 		
 		echo"</br><h3><b> Legg inn ny eiendel </b></h3>
 			<form action='' method='post'>
@@ -199,17 +204,14 @@
 	
 		if(isset($_POST['submission'])){
 		
-			if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar']) &&
-			!empty($_POST['kategori']) && !empty($_POST['verdi']) && !empty($_POST['detalj1']) && !empty($_POST['detalj2'])){
+			if(!empty($_POST['dato']) && !empty($_POST['kategori']) && !empty($_POST['verdi'])
+				&& !empty($_POST['detalj1']) && !empty($_POST['detalj2'])){
 			
 	//		&&		!empty($_POST['sted']) && !empty($_POST['fra'])&& !empty($_POST['til'])&& 
 	//		!empty($_POST['l_dag'])&& !empty($_POST['l_mnd'])&& !empty($_POST['l_aar'])&& !empty($_POST['varighet'])){	
 			
 	//if(!empty($_POST['a_dag']) && !empty($_POST['a_mnd']) && !empty($_POST['a_aar'])){
-	
-				// $f_a_dato = $_POST['a_dag'];
-				// $f_a_mnd = $_POST['a_mnd'];
-				// $f_a_aar = $_POST['a_aar'];
+
 				$dato = $_POST['dato'];
 				
 				$f_kategori = $_POST['kategori'];
@@ -220,13 +222,10 @@
 				$f_fra = $_POST['fra'];
 				$f_til = $_POST['til'];
 				
-				// $f_l_dato = $_POST['l_dag'];
-				// $f_l_mnd = $_POST['l_mnd'];
-				// $f_l_aar = $_POST['l_aar'];
 				$laaneDato = $_POST['laaneDato'];
 				
 				$f_varighet = $_POST['varighet'];
-				print_r($laaneDato);
+
 				//echo"$f_a_dato $f_a_mnd $f_a_aar $f_kategori $f_verdi $f_detalj1 $f_detalj2 $f_sted $f_fra $f_til $f_l_dato $f_l_mnd $f_l_aar $f_varighet";
 				
 				$svar = getDato($dato);
@@ -236,32 +235,77 @@
 					echo "<h2>Resultat</h2><i>Det er ikke så mange dager i den måneden!</i>";
 					exit;
 				}
-				
-				echo "<i>Great success!</i>";
+
+				if(!(checkValidInteger($f_verdi))){
+					echo "<h2>Resultat</h2><i>Verdi må oppgis som et heltall!</i>";
+					exit;
+				}
+
+				if(($f_kategori == 'miniatyrer') && !(checkValidInteger($f_detalj1) && checkValidInteger($f_detalj2))){
+					echo "<h2>Resultat</h2><i>Detaljer må oppgis som heltall for miniatyrer!</i>";
+					exit;
+				}
+
+				if($f_fra!='nei' && $f_til!='nei'){
+					echo "<h2>Resultat</h2><i>Eiendel kan ikke både være innlånt og utlånt samtidig!</i>";
+					exit;
+				}
+
+				echo "<h2>Resultat</h2>";
+
 			//	echo "$svar";
-				
+
 				$query1 = "INSERT INTO eiendel(Anskafelsesdato, Verdi) VALUES ('$svar', $f_verdi)";
 				$result1 = $db->query($query1);
-				
+
+				echo"Registerer eiendel anskaffet dato: $svar, med verdi: $f_verdi,- NOK <br>";
+
 				if($f_kategori=='tog'){
 					$d1 = 'Modell';
 					$d2 = 'Aargang';
+					$f_detalj1 = "'$f_detalj1'";
+					$f_detalj2 = "'$f_detalj2'";
 				}
 				elseif($f_kategori=='skinner'){
 					$d1 = 'Type';
 					$d2 = 'Lengde';
+					$f_detalj1 = "'$f_detalj1'";
+					$f_detalj2 = "'$f_detalj2'";
 				}
 				elseif($f_kategori=='miniatyrer'){
 					$d1 = 'Bredde';
 					$d2 = 'Hoyde';
 				}
-				
-				$query2 = "INSERT INTO $f_kategori(Eiendel_ID, $d1, $d2) VALUES(LAST_INSERT_ID(), '$f_detalj1', '$f_detalj2')";
+
+				//echo"$f_detalj1";
+				//echo"$f_detalj2";
+				$query2 = "INSERT INTO $f_kategori(Eiendel_ID, $d1, $d2) VALUES(LAST_INSERT_ID(), $f_detalj1, $f_detalj2)";
 				$result2 = $db->query($query2);
-				
+
+				echo"Registert eiendel tilhører kategori: $f_kategori, med detaljer: $f_detalj1. $f_detalj2. <br>";
+
+				$query3 = "INSERT INTO oppbevares(Eiendel_ID, Sted_Adress) VALUES(LAST_INSERT_ID(), '$f_sted')";
+				$result3 = $db->query($query3);
+				//echo($f_sted);
+
+				echo"Registert eiendel oppbevares på $f_sted <br>";
+
+				if($f_fra!='nei'){
+					$query4 = "INSERT INTO innlaant_fra(Person_PersonNR, Eiendel_ID, Utlaansdato, Utlaansperiode) VALUES($f_fra, LAST_INSERT_ID(), '$svar2', $f_varighet)";
+					$result4 = $db->query($query4);
+					echo"Registert eiendel er innlånt fra $f_fra, fra gjeldende dato $svar2 i $f_varighet dager <br>";
+				}
+
+				if($f_til!='nei'){
+					$query5 = "INSERT INTO utlaant_til(Medlem_Person_PersonNR, Eiendel_ID, Utlaansdato, Utlaansperiode) VALUES($f_til, LAST_INSERT_ID(), '$svar2', $f_varighet)";
+					$result5 = $db->query($query5);
+					echo"Registert eiendel er utlånt til $f_til, fra gjeldende dato $svar2 i $f_varighet dager <br>";
+				}
+
+				echo "<i>Great success!</i>";
 			}else{
-				echo"<h3>Resultat</h3><i>Du må minst angi anskaffelsesdato, verdi, kategori og detaljer!<i>";
-			
+				echo "<h2>Resultat</h2>";
+				echo "<i>Du må minst oppgi anskaffelsdato, verdi, kategori og detaljer!</i>";
 			}
 		}
 		
